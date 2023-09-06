@@ -295,7 +295,7 @@ class _FlutterEarthState extends State<FlutterEarth> with TickerProviderStateMix
 
   Future<Tile> loadTileImage(Tile tile) async {
     tile.status = TileStatus.pending;
-    if (widget.onTileStart != null) widget.onTileStart(tile);
+    widget.onTileStart(tile);
     if (tile.status == TileStatus.ready) return tile;
 
     tile.status = TileStatus.fetching;
@@ -310,7 +310,7 @@ class _FlutterEarthState extends State<FlutterEarth> with TickerProviderStateMix
     );
     tile.image = await c.future;
     tile.status = TileStatus.ready;
-    if (widget.onTileEnd != null) widget.onTileEnd(tile);
+    widget.onTileEnd(tile);
     if(mounted) setState(() {});
 
     return tile;
@@ -437,8 +437,8 @@ class _FlutterEarthState extends State<FlutterEarth> with TickerProviderStateMix
     //Use matrix rotation is more efficient.
     final matrix = q.asRotationMatrix()..invert();
 
-    final int imageWidth = image?.width ?? 1;
-    final int imageHeight = image?.height ?? 1;
+    final int imageWidth = image.width ?? 1;
+    final int imageHeight = image.height ?? 1;
     final int subdivisionsX = subdivisions * (imageWidth ~/ imageHeight);
     final int vertexCount = (subdivisions + 1) * (subdivisionsX + 1);
     final int faceCount = subdivisions * subdivisionsX * 2;
@@ -560,12 +560,10 @@ class _FlutterEarthState extends State<FlutterEarth> with TickerProviderStateMix
       );
 
       final paint = Paint();
-      if (mesh.texture != null) {
-        Float64List matrix4 = new Matrix4.identity().storage;
-        final shader = ImageShader(mesh.texture, TileMode.mirror, TileMode.mirror, matrix4);
-        paint.shader = shader;
-      }
-      canvas.drawVertices(vertices, BlendMode.src, paint);
+      Float64List matrix4 = new Matrix4.identity().storage;
+      final shader = ImageShader(mesh.texture, TileMode.mirror, TileMode.mirror, matrix4);
+      paint.shader = shader;
+          canvas.drawVertices(vertices, BlendMode.src, paint);
     }
   }
 
@@ -601,10 +599,8 @@ class _FlutterEarthState extends State<FlutterEarth> with TickerProviderStateMix
     q *= Quaternion.axisAngle(Vector3(0, 0, 1.0), -details.rotation);
     quaternion = _lastQuaternion * q; //quaternion A * B is not equal to B * A
 
-    if (widget.onCameraMove != null) {
-      widget.onCameraMove(position, zoom);
-    }
-    if(mounted) setState(() {});
+    widget.onCameraMove(position, zoom);
+      if(mounted) setState(() {});
   }
 
   void _handleScaleEnd(ScaleEndDetails details) {
@@ -669,29 +665,27 @@ class _FlutterEarthState extends State<FlutterEarth> with TickerProviderStateMix
     double panTime = 0;
     double riseTime = 0;
     double fallTime = 0;
-    if (riseZoom != null) riseTime = Duration.millisecondsPerSecond * (riseZoom - zoom).abs() / riseSpeed;
+    riseTime = Duration.millisecondsPerSecond * (riseZoom - zoom).abs() / riseSpeed;
     riseZoom ??= zoom;
-    if (fallZoom != null) fallTime = Duration.millisecondsPerSecond * (fallZoom - riseZoom).abs() / fallSpeed;
+    fallTime = Duration.millisecondsPerSecond * (fallZoom - riseZoom).abs() / fallSpeed;
     fallZoom ??= riseZoom;
 
     double panRadians;
-    if (newLatLon != null) {
-      final oldEuler = quaternionToEulerAngles(quaternion);
-      final newEuler = latLonToEulerAngles(newLatLon);
-      //Prevent the rotation over 180 degrees.
-      if ((oldEuler.yaw - newEuler.yaw).abs() > math.pi) {
-        newEuler.yaw -= math.pi * 2.0;
-      }
-      // q2 = q0 * q1 then q1 = q0.inverted * q2, and q0 = q2 * q1.inverted
-      final q0 = eulerAnglesToQuaternion(oldEuler);
-      final q2 = eulerAnglesToQuaternion(newEuler);
-      final q1 = q0.inverted() * q2;
-      _lastRotationAxis = quaternionAxis(q1); //q1.axis;
-      _lastQuaternion = q0;
-      panRadians = q1.radians;
-      panTime = Duration.millisecondsPerSecond * (panRadians * _radius * math.pow(2, riseZoom)).abs() / panSpeed;
+    final oldEuler = quaternionToEulerAngles(quaternion);
+    final newEuler = latLonToEulerAngles(newLatLon);
+    //Prevent the rotation over 180 degrees.
+    if ((oldEuler.yaw - newEuler.yaw).abs() > math.pi) {
+      newEuler.yaw -= math.pi * 2.0;
     }
-
+    // q2 = q0 * q1 then q1 = q0.inverted * q2, and q0 = q2 * q1.inverted
+    final q0 = eulerAnglesToQuaternion(oldEuler);
+    final q2 = eulerAnglesToQuaternion(newEuler);
+    final q1 = q0.inverted() * q2;
+    _lastRotationAxis = quaternionAxis(q1); //q1.axis;
+    _lastQuaternion = q0;
+    panRadians = q1.radians;
+    panTime = Duration.millisecondsPerSecond * (panRadians * _radius * math.pow(2, riseZoom)).abs() / panSpeed;
+  
     int duration = (riseTime + panTime + fallTime).ceil();
     animController.duration = Duration(milliseconds: duration);
     final double riseCurveEnd = riseTime / duration;
@@ -724,17 +718,11 @@ class _FlutterEarthState extends State<FlutterEarth> with TickerProviderStateMix
       ..addListener(() {
         if(mounted) setState(() {
           if (!animController.isCompleted) {
-            if (panAnimation != null) {
-              final q = Quaternion.axisAngle(_lastRotationAxis, panAnimation.value);
-              quaternion = _lastQuaternion * q;
-            }
-            if (riseAnimation != null) {
-              if (animController.value < _panCurveEnd) zoom = riseAnimation.value;
-            }
-            if (zoomAnimation != null) {
-              if (animController.value >= _panCurveEnd) zoom = zoomAnimation.value;
-            }
-            if (widget.onCameraMove != null) widget.onCameraMove(position, zoom);
+            final q = Quaternion.axisAngle(_lastRotationAxis, panAnimation.value);
+            quaternion = _lastQuaternion * q;
+                      if (animController.value < _panCurveEnd) zoom = riseAnimation.value;
+                      if (animController.value >= _panCurveEnd) zoom = zoomAnimation.value;
+                      widget.onCameraMove(position, zoom);
           } else {
             _panCurveEnd = 0;
           }
@@ -742,10 +730,8 @@ class _FlutterEarthState extends State<FlutterEarth> with TickerProviderStateMix
       });
 
     _controller = FlutterEarthController(this);
-    if (widget.onMapCreated != null) {
-      widget.onMapCreated(_controller);
-    }
-
+    widget.onMapCreated(_controller);
+  
     loadImageFromAsset('packages/flutter_earth/assets/google_map_north_pole.png').then((Image value) => northPoleImage = value);
     loadImageFromAsset('packages/flutter_earth/assets/google_map_south_pole.png').then((Image value) => southPoleImage = value);
   }
