@@ -267,8 +267,8 @@ class _FlutterEarthState extends State<FlutterEarth>
   final int minZoom = 2;
   final int maxZoom = 21;
   List<HashMap<int, Tile>> tiles = [];
-  late Image northPoleImage;
-  late Image southPoleImage;
+  //late Image northPoleImage;
+  //late Image southPoleImage;
 
   Vector3 canvasPointToVector3(Offset point) {
     final x = point.dx - width / 2;
@@ -571,11 +571,11 @@ class _FlutterEarthState extends State<FlutterEarth>
       initMeshTexture(mesh);
       meshList.add(mesh);
     }
-    if (widget.showPole) {
-      meshList..add(buildPoleMesh(math.pi / 2, radians(84), 5, northPoleImage));
-      meshList
-          .add(buildPoleMesh(-radians(84), -math.pi / 2, 5, southPoleImage));
-    }
+    // if (widget.showPole) {
+    //   meshList..add(buildPoleMesh(math.pi / 2, radians(84), 5, northPoleImage));
+    //   meshList
+    //       .add(buildPoleMesh(-radians(84), -math.pi / 2, 5, southPoleImage));
+    // }
 
     meshList.sort((Mesh a, Mesh b) {
       return b.z.compareTo(a.z);
@@ -591,9 +591,12 @@ class _FlutterEarthState extends State<FlutterEarth>
 
       final paint = Paint();
       Float64List matrix4 = new Matrix4.identity().storage;
-      final shader =
-          ImageShader(mesh.texture!, TileMode.mirror, TileMode.mirror, matrix4);
-      paint.shader = shader;
+      if (mesh.texture != null) {
+        final shader = ImageShader(
+            mesh.texture!, TileMode.mirror, TileMode.mirror, matrix4);
+        paint.shader = shader;
+      }
+
       canvas.drawVertices(vertices, BlendMode.src, paint);
     }
   }
@@ -776,9 +779,9 @@ class _FlutterEarthState extends State<FlutterEarth>
               final q =
                   Quaternion.axisAngle(_lastRotationAxis, panAnimation!.value);
               quaternion = _lastQuaternion * q;
-              if (animController.value < _panCurveEnd)
+              if (riseAnimation != null && animController.value < _panCurveEnd)
                 zoom = riseAnimation!.value;
-              if (animController.value >= _panCurveEnd)
+              if (zoomAnimation != null && animController.value >= _panCurveEnd)
                 zoom = zoomAnimation!.value;
               widget.onCameraMove(position, zoom);
             } else {
@@ -790,12 +793,12 @@ class _FlutterEarthState extends State<FlutterEarth>
     _controller = FlutterEarthController(this);
     widget.onMapCreated(_controller);
 
-    loadImageFromAsset(
-            'packages/flutter_earth/assets/google_map_north_pole.png')
-        .then((Image value) => northPoleImage = value);
-    loadImageFromAsset(
-            'packages/flutter_earth/assets/google_map_south_pole.png')
-        .then((Image value) => southPoleImage = value);
+    // loadImageFromAsset(
+    //         'packages/flutter_earth/assets/google_map_north_pole.png')
+    //     .then((Image value) => northPoleImage = value);
+    // loadImageFromAsset(
+    //         'packages/flutter_earth/assets/google_map_south_pole.png')
+    //     .then((Image value) => southPoleImage = value);
   }
 
   @override

@@ -4,22 +4,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_earth/flutter_earth.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Earth Demo',
       theme: ThemeData.dark(),
-      home: MyHomePage(title: 'Flutter Earth'),
+      home: const MyHomePage(title: 'Flutter Earth'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -33,7 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
   LatLon _position = LatLon(0, 0);
   String _cityName = '';
   dynamic _cityList;
-  Random _random = Random();
+  final Random _random = Random();
 
   void _onMapCreated(FlutterEarthController controller) {
     _controller = controller;
@@ -111,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: _moveToNextCity,
         tooltip: 'Increment',
         mini: true,
-        child: Icon(Icons.location_searching),
+        child: const Icon(Icons.location_searching),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
