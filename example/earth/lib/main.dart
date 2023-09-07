@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -28,7 +28,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  FlutterEarthController _controller;
+  late FlutterEarthController _controller;
   double _zoom = 0;
   LatLon _position = LatLon(0, 0);
   String _cityName = '';
@@ -54,7 +54,13 @@ class _MyHomePageState extends State<MyHomePage> {
       final double lat = double.parse(city['latitude']);
       final double lon = double.parse(city['longitude']);
       _cityName = city['city'];
-      _controller.animateCamera(newLatLon: LatLon(lat, lon).inRadians(), riseZoom: 2.2, fallZoom: 11.2, panSpeed: 500, riseSpeed: 3, fallSpeed: 2);
+      _controller.animateCamera(
+          newLatLon: LatLon(lat, lon).inRadians(),
+          riseZoom: 2.2,
+          fallZoom: 11.2,
+          panSpeed: 500,
+          riseSpeed: 3,
+          fallSpeed: 2);
     }
   }
 
@@ -76,11 +82,13 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 Expanded(
                   child: FlutterEarth(
-                    url: 'http://mt0.google.cn/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}',
-                    radius: 180,
-                    onMapCreated: _onMapCreated,
-                    onCameraMove: _onCameraMove,
-                  ),
+                      url:
+                          'http://mt0.google.cn/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}',
+                      radius: 180,
+                      onMapCreated: _onMapCreated,
+                      onCameraMove: _onCameraMove,
+                      onTileStart: (tile) {},
+                      onTileEnd: (tile) {}),
                 ),
               ],
             ),
