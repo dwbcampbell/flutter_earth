@@ -267,8 +267,8 @@ class _FlutterEarthState extends State<FlutterEarth>
   final int minZoom = 2;
   final int maxZoom = 21;
   List<HashMap<int, Tile>> tiles = [];
-  //late Image northPoleImage;
-  //late Image southPoleImage;
+  Image? northPoleImage;
+  Image? southPoleImage;
 
   Vector3 canvasPointToVector3(Offset point) {
     final x = point.dx - width / 2;
@@ -307,10 +307,12 @@ class _FlutterEarthState extends State<FlutterEarth>
 
     tile.status = TileStatus.fetching;
     final c = Completer<Image>();
+
     final url = widget.url
         .replaceAll('{z}', '${tile.z}')
         .replaceAll('{x}', '${tile.x}')
         .replaceAll('{y}', '${tile.y}');
+
     final networkImage = NetworkImage(url);
     final imageStream = networkImage.resolve(ImageConfiguration());
     imageStream.addListener(
@@ -571,11 +573,16 @@ class _FlutterEarthState extends State<FlutterEarth>
       initMeshTexture(mesh);
       meshList.add(mesh);
     }
-    // if (widget.showPole) {
-    //   meshList..add(buildPoleMesh(math.pi / 2, radians(84), 5, northPoleImage));
-    //   meshList
-    //       .add(buildPoleMesh(-radians(84), -math.pi / 2, 5, southPoleImage));
-    // }
+    if (widget.showPole) {
+      if (northPoleImage != null) {
+        meshList
+            .add(buildPoleMesh(math.pi / 2, radians(84), 5, northPoleImage!));
+      }
+      if (southPoleImage != null) {
+        meshList
+            .add(buildPoleMesh(-radians(84), -math.pi / 2, 5, southPoleImage!));
+      }
+    }
 
     meshList.sort((Mesh a, Mesh b) {
       return b.z.compareTo(a.z);
@@ -793,12 +800,12 @@ class _FlutterEarthState extends State<FlutterEarth>
     _controller = FlutterEarthController(this);
     widget.onMapCreated(_controller);
 
-    // loadImageFromAsset(
-    //         'packages/flutter_earth/assets/google_map_north_pole.png')
-    //     .then((Image value) => northPoleImage = value);
-    // loadImageFromAsset(
-    //         'packages/flutter_earth/assets/google_map_south_pole.png')
-    //     .then((Image value) => southPoleImage = value);
+    loadImageFromAsset(
+            'packages/flutter_earth/assets/google_map_north_pole.png')
+        .then((Image value) => northPoleImage = value);
+    loadImageFromAsset(
+            'packages/flutter_earth/assets/google_map_south_pole.png')
+        .then((Image value) => southPoleImage = value);
   }
 
   @override

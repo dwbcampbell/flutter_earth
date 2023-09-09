@@ -29,6 +29,29 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
+enum TileServer {
+  cartoDbDark,
+  cartoDbLight,
+  mapsForFree,
+  openStreetMap,
+}
+
+// Tile Server URL Strings
+// {x} Horizontal tile index from west to east
+// {y} Vertical tile index from north to south
+// {z} Zoom level
+// {r} Optional parameter for retina tiles -- @2x
+
+Map<TileServer, String> tileServerUrls = {
+  TileServer.cartoDbDark:
+      'https://b.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png',
+  TileServer.cartoDbLight:
+      'https://b.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',
+  TileServer.mapsForFree:
+      'https://maps-for-free.com/layer/relief/z{z}/row{y}/{z}_{x}-{y}.jpg',
+  TileServer.openStreetMap: 'http://tile.openstreetmap.org/{z}/{x}/{y}.png'
+};
+
 class _MyHomePageState extends State<MyHomePage> {
   late FlutterEarthController _controller;
   double _zoom = 0;
@@ -76,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var openStreetMapURL = 'http://tile.openstreetmap.org/{z}/{x}/{y}.png';
+    var openStreetMapURL = tileServerUrls[TileServer.cartoDbDark];
     return Scaffold(
       body: Center(
         child: Stack(
@@ -85,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 Expanded(
                   child: FlutterEarth(
-                      url: openStreetMapURL,
+                      url: openStreetMapURL!,
                       radius: 180,
                       onMapCreated: _onMapCreated,
                       onCameraMove: _onCameraMove,
