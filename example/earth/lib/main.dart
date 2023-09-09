@@ -99,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var openStreetMapURL = tileServerUrls[TileServer.cartoDbDark];
+    var tileServerURL = tileServerUrls[TileServer.openStreetMap];
     return Scaffold(
       body: Center(
         child: Stack(
@@ -108,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 Expanded(
                   child: FlutterEarth(
-                      url: openStreetMapURL!,
+                      url: tileServerURL!,
                       radius: 180,
                       onMapCreated: _onMapCreated,
                       onCameraMove: _onCameraMove,
