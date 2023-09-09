@@ -76,6 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var openStreetMapURL = 'http://tile.openstreetmap.org/{z}/{x}/{y}.png';
     return Scaffold(
       body: Center(
         child: Stack(
@@ -84,8 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 Expanded(
                   child: FlutterEarth(
-                      url:
-                          'http://mt0.google.cn/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}',
+                      url: openStreetMapURL,
                       radius: 180,
                       onMapCreated: _onMapCreated,
                       onCameraMove: _onCameraMove,
