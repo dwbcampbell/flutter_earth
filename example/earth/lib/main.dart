@@ -34,6 +34,9 @@ enum TileServer {
   cartoDbLight,
   mapsForFree,
   openStreetMap,
+  osmNoLabels,
+  stamenTerrain,
+  stamenWatercolor,
 }
 
 // Tile Server URL Strings
@@ -49,7 +52,12 @@ Map<TileServer, String> tileServerUrls = {
       'https://b.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',
   TileServer.mapsForFree:
       'https://maps-for-free.com/layer/relief/z{z}/row{y}/{z}_{x}-{y}.jpg',
-  TileServer.openStreetMap: 'http://tile.openstreetmap.org/{z}/{x}/{y}.png'
+  TileServer.openStreetMap: 'http://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  TileServer.osmNoLabels:
+      'https://c.tiles.wmflabs.org/osm-no-labels/{z}/{x}/{y}.png',
+  TileServer.stamenTerrain: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.jpg',
+  TileServer.stamenWatercolor:
+      'http://tile.stamen.com/watercolor/{z}/{x}/{y}.jpg',
 };
 
 class _MyHomePageState extends State<MyHomePage> {
